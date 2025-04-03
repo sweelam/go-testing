@@ -8,6 +8,7 @@ import (
 
 	api "database.learning/start/internal/handlers"
 	"github.com/gin-gonic/gin"
+	"github.com/golang/glog"
 )
 
 func StartServer() {
@@ -37,7 +38,11 @@ func predictByName(c *gin.Context) {
 		return
 	}
 
-	defer response.Body.Close()
+	defer func() {
+		if err := response.Body.Close(); err != nil {
+			glog.Warning("Error closing response body: %v", err)
+		}
+	}()
 
 	bodyRes, err := io.ReadAll(response.Body)
 

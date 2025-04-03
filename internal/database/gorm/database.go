@@ -13,15 +13,16 @@ var (
 	db *gorm.DB
 )
 
-func ConnectDB() (*gorm.DB, error) {
+func ConnectDB() {
 
 	if db != nil {
-		return db, nil
+		return
 	}
 
 	dsn := envLoader.LoadEnv("DB_DSN")
 	if dsn == "" {
 		log.Fatal("DB_DSN environment variable is not set")
+		panic("DB_DSN environment variable is not set")
 	}
 
 	var err error
@@ -29,8 +30,16 @@ func ConnectDB() (*gorm.DB, error) {
 
 	if err != nil {
 		log.Fatal(err)
+		panic(err)
 	}
 
 	log.Print("Connected to the database")
-	return db, nil
+}
+
+func GetDB() *gorm.DB {
+	if db == nil {
+		log.Fatal("Database connection is not established")
+		panic("Database connection is not established")
+	}
+	return db
 }

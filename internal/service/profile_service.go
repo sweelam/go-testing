@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	database "database.learning/start/internal/database/native"
+	"github.com/golang/glog"
 )
 
 type Job struct {
@@ -20,7 +21,13 @@ func getProfiles() ([]Job, error) {
 	var jobs []Job
 	var j Job
 	rs := database.Read("SELECT * FROM my_jobs")
-	defer rs.Close()
+
+	defer func() {
+		if err := rs.Close(); err != nil {
+			glog.Warning("Error closing result set:", err)
+		}
+	}()
+
 	for rs.Next() {
 		if err := rs.Scan(&j.ID,
 			&j.Title,
